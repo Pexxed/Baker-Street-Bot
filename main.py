@@ -1,7 +1,8 @@
 import discord
 import random
 import time
-import fileinput
+import os
+import pprint
 
 mods = ['Chris♚#4498']
 leaderboard = {}
@@ -92,18 +93,29 @@ class MyClient(discord.Client):
             user_balance = message.content.split(' ')[1]
             user_balance = user_balance.split(':')
             userid = user_balance[0]
-            user_bal = user_balance[1]
+            user_bal = str(user_balance[1])
+            old_balance = user_balance[1]
 
             if str(message.author) in mods:
-                print(str(message.author) + ' changed the Account balance of ' + str(
-                    await client.fetch_user(userid)) + ':')
-                print('Old Balance: ' + users[userid] + '€')
-                for line in fileinput.input('users.txt', inplace = 1):
-                    line.replace(str(userid) + ':' + users[userid], str(userid) + ':' + user_bal)
-                print('New Balance: ' + users[userid] + '€')
-                print("----------------------------------------------------------")
+                if str(userid) in users:
+                    print("Found UserID of " + str(await client.fetch_user(userid)))
+                    str(userid)
+
+                    os.remove('users.txt')
+                    open("users.txt", "x")
+                    with open("users.txt", "w") as users_file:
+                        users_file.write(pprint.pprint(users))
+                        users_file.close()
 
 
+
+                    print(str(message.author) + ' changed the Account balance of ' + str(
+                        await client.fetch_user(userid)) + ':')
+                    print('Old Balance: ' + old_balance + '€')
+                    print('New Balance: ' + str(users[userid]) + '€')
+                    print("----------------------------------------------------------")
+                else:
+                    print('Error: Userid not in database')
             else:
                 await message.channel.send('Fehlende Berechtigungen: Die Account balance konnte nicht verändert werden.')
                 print(str(message.author) + ' tried to change the account balance of '
@@ -196,7 +208,7 @@ class MyClient(discord.Client):
                     clrwin = -1
                     print('Lost Farbentest')
                     return
-                if farbe == -2 and result not in roulette_black:
+                if farbe == -2 and result not in roulette_black and result not in roulette_green:
                     clrwin = 1
                     print('Won Farbentest')
                     return
@@ -250,7 +262,7 @@ class MyClient(discord.Client):
 
                 if result in roulette_black:
                     farbe_result = 'black'
-                elif result in roulette_green:
+                elif str(result) in roulette_green:
                     farbe_result = 'green'
                 else:
                     farbe_result = 'red'
