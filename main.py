@@ -99,7 +99,7 @@ class MyClient(discord.Client):
                     await client.fetch_user(userid)) + ':')
                 print('Old Balance: ' + users[userid] + '€')
                 for line in fileinput.input('users.txt', inplace = 1):
-                    line.replace(str(userid) + ':' + users[userid], str(userid) + ':' + user_bal),
+                    line.replace(str(userid) + ':' + users[userid], str(userid) + ':' + user_bal)
                 print('New Balance: ' + users[userid] + '€')
                 print("----------------------------------------------------------")
 
