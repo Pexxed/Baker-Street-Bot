@@ -7,6 +7,7 @@ import pprint
 mods = ['Chris♚#4498']
 leaderboard = {}
 roulette_black = ['2', '4', '6', '8', '10', '11', '13', '15', '17', '20', '22', '24', '26', '28', '29', '31', '33', '35']
+roulette_red = ['1', '3', '5', '7', '9', '12', '14', '16', '18', '19', '21', '23', '25', '27', '30', '32', '34', '36']
 roulette_green = ['0', '00']
 roulette_even = ['1', '3', '5', '7', '9', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29', '31', '33', '35']
 roulette_onetoeiteen = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
@@ -208,12 +209,11 @@ class MyClient(discord.Client):
                     clrwin = -1
                     print('Lost Farbentest')
                     return
-                if farbe == -2 and str(result) not in roulette_black:
-                    if result not in roulette_green:
+                if farbe == -2 and str(result) in roulette_red:
                         clrwin = 1
                         print('Won Farbentest')
                         return
-                elif farbe == -2 and str(result) in roulette_black:
+                elif farbe == -2 and str(result)  not in roulette_red:
                     clrwin = -1
                     print ('Lost Farbentest')
                     return
