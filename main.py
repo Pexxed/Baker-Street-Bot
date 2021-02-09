@@ -246,13 +246,20 @@ class MyClient(discord.Client):
                 global first12
                 global second12
                 global third12
+                global result
 
                 if nmbwin == 1 or clrwin == 1 or eowin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
                     await message.channel.send("Du hast gewonnen!")
                     print("----------------------------------------------------------")
                     return
                 else:
-                    await message.channel.send("Leider verloren")
+                    if result in roulette_black:
+                        farbe_result = 'black'
+                    elif result in roulette_green:
+                        farbe_result = 'green'
+                    else:
+                        farbe_result = 'red'
+                    await message.channel.send("Leider verloren" + '(' + result + ' / ' + farbe_result + ')')
                     print("----------------------------------------------------------")
                     return
 
