@@ -259,7 +259,7 @@ class MyClient(discord.Client):
                         farbe_result = 'green'
                     else:
                         farbe_result = 'red'
-                    await message.channel.send("Leider verloren" + '(' + str(result) + ' / ' + str(farbe_result) + ')')
+                    await message.channel.send("Leider verloren " + '(' + str(result) + ' / ' + str(farbe_result) + ')')
                     print("----------------------------------------------------------")
                     return
 
