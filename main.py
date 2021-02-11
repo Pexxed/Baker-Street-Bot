@@ -166,7 +166,7 @@ class MyClient(discord.Client):
             global error
 
             try:
-                if tip == 'odd' or tip == 'ungerade':
+                if tip == 'odd':
                     if str(result) not in roulette_even:
                         eowin = 1
                         error = 0
@@ -179,7 +179,7 @@ class MyClient(discord.Client):
                         print('Lost Odd or Even')
                         await resulttest()
                         return
-                if tip == 'even' or tip == 'gerade':
+                if tip == 'even':
                     if str(result) in roulette_even:
                         eowin = 1
                         error = 0
@@ -436,7 +436,7 @@ class MyClient(discord.Client):
                     await farbeninput()
                     await farbentest()
                     return
-                if tip == 'odd' or tip == 'ungleich' or tip == 'even' or tip == 'gleich':
+                if tip == 'odd' or tip == 'even':
                     await gerade_ungerade()
                     return
                 # error = 1 == no color detected
