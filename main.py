@@ -244,7 +244,7 @@ class MyClient(discord.Client):
             if tip == 'odd':
                 tip = 'ungerade'
             if tip == 'even':
-                tip == 'gerade'
+                tip = 'gerade'
 
             if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
                 await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
