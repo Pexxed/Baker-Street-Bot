@@ -79,7 +79,8 @@ class MyClient(discord.Client):
                                        + '\n' + '/help | /register | /stats | /leaderboard | /permissions | /permissions <userid>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
-                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip x'
+                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip odd | /tip even | /tip x'
+                                       + '\n' + '/tip random'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Mods:'
                                        + '\n' + '/give <userid> | /mod <username>' + '```')
