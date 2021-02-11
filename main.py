@@ -328,14 +328,15 @@ class MyClient(discord.Client):
                 wins_looses.split('|')
                 wins = wins_looses[0]
                 looses = wins_looses[2]
-                if looses == 0:
-                    win_loose_rate = wins
-                else:
+
+                try:
                     win_loose_rate = int(wins) / int(looses)
+                except ZeroDivisionError:
+                    win_loose_rate = int(wins)
 
                 await message.channel.send('```'
                                            + '\n' + 'Showing Statistics for: ' + str(await client.fetch_user(int(username)))
-                                           + '\n \n' + 'Wins: ' + wins + ' Looses: ' + looses + ' W/L rate: ' + win_loose_rate
+                                           + '\n \n' + 'Wins: ' + wins + ' Looses: ' + looses + ' W/L rate: ' + str(win_loose_rate)
                                            + '\n' + '```')
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
