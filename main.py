@@ -2,9 +2,7 @@ import discord
 import random
 import time
 import os
-import pprint
 
-mods = ['Chris♚#4498']
 leaderboard = {}
 roulette_black = ['2', '4', '6', '8', '10', '11', '13', '15', '17', '20', '22', '24', '26', '28', '29', '31', '33', '35']
 roulette_red = ['1', '3', '5', '7', '9', '12', '14', '16', '18', '19', '21', '23', '25', '27', '30', '32', '34', '36']
@@ -15,8 +13,10 @@ roulette_firsttwelve = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
 roulette_secondtwelve = ['13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
 roulette_thirtwelve = ['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36']
 users = {}
+mods = []
 userlist = []
 messagecode = 0
+placeholder = '--------------------------------------------------------------------------'
 
 try:
     with open("users.txt", "r") as users_file:
@@ -26,8 +26,13 @@ try:
                 users[user] = wealth
                 userlist.append(user + ':' + users[user])
         users_file.close()
+    with open("mods.txt", "r") as mods_file:
+        f = mods_file.read()
+        mods = f.splitlines()
+        users_file.close()
 except FileNotFoundError:
     users = {}
+    mods = {}
 
 def add_user():
     f = open("users.txt", "a")
@@ -39,6 +44,13 @@ def add_user():
         f.flush()
         messagecode = 1
         f.close()
+
+def add_mod():
+    mods.append(new_mod)
+    f = open("mods.txt", "a")
+    f.write(new_mod + '\n')
+    f.flush()
+    f.close()
 
 class MyClient(discord.Client):
     # Einloggen
@@ -55,14 +67,18 @@ class MyClient(discord.Client):
             await message.channel.send('```'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
-                                       + '\n' + '/help | /leaderboard | /stats | /register'
+                                       + '\n' + '/help | /register | /stats | /leaderboard | /permissions | /permissions <userid>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
-                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip x' + '```')
+                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip x'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + 'Mods:'
+                                       + '\n' + '/give <userid> | /mod <username>' + '```')
 
         if message.content == '/leaderboard':
             ranking = sorted(users, key=users.get, reverse=True)
-            await message.channel.send("```Baker Street's Top Ten:"
+            await message.channel.send('```'
+                                       + '\n' + "Baker Street's Top Ten:"
                                        + '\n' + '1st Place:  @' + str(await client.fetch_user(ranking[0])) + '  |   '
                                        + '[Account Balance: ' + users[ranking[0]] + '€' + ']'
                                        + '\n' + '2nd Place:  @' + str(await client.fetch_user(ranking[1])) + '  |   '
@@ -83,44 +99,86 @@ class MyClient(discord.Client):
                                        + '\n' + '9th Place:  @' + str(await client.fetch_user(ranking[8])) + '  |   '
                                        + '[Account Balance: ' + users[ranking[8]] + '€' + ']'
                                        + '\n' + '10th Place: @' + str(await client.fetch_user(ranking[9])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[9]] + '€' + ']' + '```')
+                                       + '[Account Balance: ' + users[ranking[9]] + '€' + ']'
+                                       + '\n' + '```')
 
-        if message.content.startswith('/set.balance'):
+        if message.content.startswith('/permissions'):
+            global new_mod
+            try:
+                requested_user_rank = message.content.split(' ')[1]
+            except IndexError:
+                requested_user_rank = str(message.author.id)
+
+            if requested_user_rank in users:
+                if str(requested_user_rank) in mods:
+                    await message.channel.send('```'
+                                                + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(requested_user_rank))
+                                                + '\n \n' + 'Ranks: Moderator, Player'
+                                                + '\n' + '```')
+                else:
+                    await message.channel.send('```'
+                                                + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(requested_user_rank))
+                                                + '\n \n' + 'Rank: Player'
+                                                + '\n' + '```')
+            else:
+                await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
+
+        if message.content.startswith('/mod'):
+            global new_mod
+
+            new_mod = message.content.split(' ')[1]
+            if str(message.author.id) in mods:
+                if new_mod not in mods:
+                    add_mod()
+                    await message.channel.send('`Added new mod: ' + str(await client.fetch_user(new_mod)) + '`')
+                    print(message.author + ' added ' + new_mod + ' to mods')
+                    print("----------------------------------------------------------")
+                else:
+                    await message.channel.send('`' + str(await client.fetch_user(new_mod)) + ' is already a mod`')
+                    print(message.author + ' tried to add ' + new_mod + ' to mods')
+                    print('Error: User is already a mod')
+                    print("----------------------------------------------------------")
+            else:
+                await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
+                print(message.author + ' tried to add ' + new_mod + ' to mods')
+                print('Error: User is already a mod')
+                print("----------------------------------------------------------")
+
+        if message.content.startswith('/give'):
             global newbalance
             global username
             global user_id
-            global user_bal
+            global user_balance
 
             user_balance = message.content.split(' ')[1]
             user_balance = user_balance.split(':')
             userid = user_balance[0]
-            user_bal = str(user_balance[1])
-            old_balance = user_balance[1]
-
-            if str(message.author) in mods:
+            try:
+                newbalance = str(user_balance[1])
+            except IndexError:
+                await message.channel.send('Geld konnte nicht hinzugefügt werden')
+            old_balance = users[userid]
+            if str(message.author.id) in mods:
                 if str(userid) in users:
-                    print("Found UserID of " + str(await client.fetch_user(userid)))
-                    str(userid)
-
                     os.remove('users.txt')
                     open("users.txt", "x")
-                    with open("users.txt", "w") as users_file:
-                        users_file.write(pprint.pprint(users))
+                    with open("users.txt", "r+") as users_file:
+                        users[str(userid)] = newbalance
+                        for k in users.keys():
+                            users_file.write("{}:{}\n".format(k, users[k]))
+
                         users_file.close()
-
-
-
-                    print(str(message.author) + ' changed the Account balance of ' + str(
-                        await client.fetch_user(userid)) + ':')
-                    print('Old Balance: ' + old_balance + '€')
-                    print('New Balance: ' + str(users[userid]) + '€')
+                    print('Old Balance: ' + str(old_balance) + '€')
+                    print('New Balance: ' + str(users[str(userid)]) + '€')
                     print("----------------------------------------------------------")
+                    await message.channel.send("Changed Account Balance of " + str(await client.fetch_user(userid))
+                                               + " to " + newbalance + '€')
                 else:
-                    print('Error: Userid not in database')
+                    print('Error: Userid not found')
             else:
                 await message.channel.send('Fehlende Berechtigungen: Die Account balance konnte nicht verändert werden.')
                 print(str(message.author) + ' tried to change the account balance of '
-                      + str(await client.fetch_user(userid)) + ' from ' + users[userid] + 'to: ' + user_bal + '€')
+                      + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
                 print("----------------------------------------------------------")
 
 
@@ -213,7 +271,7 @@ class MyClient(discord.Client):
                         clrwin = 1
                         print('Won Farbentest')
                         return
-                elif farbe == -2 and str(result)  not in roulette_red:
+                elif farbe == -2 and str(result) not in roulette_red:
                     clrwin = -1
                     print ('Lost Farbentest')
                     return
