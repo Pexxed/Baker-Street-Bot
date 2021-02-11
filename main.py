@@ -16,7 +16,16 @@ users = {}
 mods = []
 userlist = []
 messagecode = 0
-placeholder = '--------------------------------------------------------------------------'
+nmbwin = 0
+clrwin = 0
+eowin = 0
+first12 = 0
+second12 = 0
+third12 = 0
+randomwin = 0
+farbe = '0'
+zahl = -1
+error = 0
 
 try:
     with open("users.txt", "r") as users_file:
@@ -74,6 +83,169 @@ class MyClient(discord.Client):
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Mods:'
                                        + '\n' + '/give <userid> | /mod <username>' + '```')
+
+        async def farbeninput():
+            global farbe
+            global tip
+            global error
+
+            farbe = tip.lower()
+            if farbe == 'black' or farbe == 'schwarz':
+                farbe = -1
+            elif farbe == 'red' or farbe == 'rot':
+                farbe = -2
+            elif farbe == 'green' or farbe == 'grün':
+                farbe = -3
+            else:
+                error = 1
+
+        async def zahlentest():
+            global nmbwin
+            global result
+            global zahl
+
+            if str(result) == str(zahl):
+                nmbwin = 1
+                print('Won Zahlentest')
+                await resulttest()
+                return
+            else:
+                nmbwin = -1
+                print('Lost Zahlentest')
+                await resulttest()
+                return
+
+        async def farbentest():
+            global clrwin
+            global farbe
+            global result
+
+            if farbe == -1 and str(result) in roulette_black:
+                clrwin = 1
+                print('Won Farbentest')
+                await resulttest()
+                return
+            elif farbe == -1 and str(result) not in roulette_black:
+                clrwin = -1
+                print('Lost Farbentest')
+                await resulttest()
+                return
+            if farbe == -2 and str(result) in roulette_red:
+                clrwin = 1
+                print('Won Farbentest')
+                await resulttest()
+                return
+            elif farbe == -2 and str(result) not in roulette_red:
+                clrwin = -1
+                print('Lost Farbentest')
+                await resulttest()
+                return
+            elif farbe == -3 and str(result) in roulette_green:
+                clrwin = 1
+                print('Won Farbentest')
+                await resulttest()
+                return
+            elif farbe == -3 and str(result) not in roulette_green:
+                clrwin = -1
+                print('Lost Farbentest')
+                await resulttest()
+                return
+            else:
+                clrwin = -1
+                print('No Color')
+                await resulttest()
+                return
+
+
+
+        async def gerade_ungerade():
+            global result
+            global zahl
+            global eowin
+            global error
+
+            try:
+                if tip == 'odd' or tip == 'ungleich':
+                    if str(result) not in roulette_even:
+                        eowin = 1
+                        error = 0
+                        print('Won Odd or Even')
+                        await resulttest()
+                        return
+                    if str(result) in roulette_even:
+                        eowin = -1
+                        error = 0
+                        print('Lost Odd or Even')
+                        await resulttest()
+                        return
+                if tip == 'even' or tip == 'gleich':
+                    if str(result) in roulette_even:
+                        eowin = 1
+                        error = 0
+                        print('Won Odd or Even')
+                        await resulttest()
+                        return
+                    if str(result) not in roulette_even:
+                        eowin = -1
+                        error = 0
+                        print('Lost Odd or Even')
+                        await resulttest()
+                        return
+            except:
+                error = 1
+
+        async def random_tip():
+            global tip
+            global result
+            global randomwin
+            global error
+            global zahl
+
+            if tip == 'random' or tip == 'zufall':
+                tip = str(random.randint(-1, 36))
+                if tip == '-1':
+                    tip = '00'
+                print('Tip: ' + tip)
+                if tip == str(result):
+                    randomwin = 1
+                    error = 0
+                    print('Won random tip')
+                await resulttest()
+                return
+            else:
+                randomwin = -1
+                error = 0
+                print('Lost random tip')
+                await resulttest()
+                return
+
+
+        async def resulttest():
+            global nmbwin
+            global clrwin
+            global win
+            global eowin
+            global first12
+            global second12
+            global third12
+            global result
+            global randomwin
+
+            if str(result) in roulette_black:
+                farbe_result = 'black'
+            elif str(result) in roulette_green:
+                farbe_result = 'green'
+            else:
+                farbe_result = 'red'
+
+            if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
+                await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
+                print("----------------------------------------------------------")
+                return
+            else:
+                await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
+                print("----------------------------------------------------------")
+                return
 
         if message.content == '/leaderboard':
             ranking = sorted(users, key=users.get, reverse=True)
@@ -216,125 +388,6 @@ class MyClient(discord.Client):
             global second12
             global third12
 
-            nmbwin = 0
-            clrwin = 0
-            eowin = 0
-            first12 = 0
-            second12 = 0
-            third12 = 0
-            farbe = '0'
-            zahl = -1
-            error = 0
-
-            async def farbeninput():
-                global farbe
-                global tip
-                global error
-
-                farbe = tip.lower()
-                if farbe == 'black' or farbe == 'schwarz':
-                    farbe = -1
-                elif farbe == 'red' or farbe == 'rot':
-                    farbe = -2
-                elif farbe == 'green' or farbe == 'grün':
-                    farbe = -3
-                else:
-                    error = 1
-
-
-            async def zahlentest():
-                global nmbwin
-                global result
-                global zahl
-
-                if str(result) == str(zahl):
-                    nmbwin = 1
-                    print('Won Zahlentest')
-                else:
-                    nmbwin = -1
-                    print('Lost Zahlentest')
-
-            async def farbentest():
-                global clrwin
-                global farbe
-                global result
-
-                if farbe == -1 and str(result) in roulette_black:
-                    clrwin = 1
-                    print('Won Farbentest')
-                    return
-                elif farbe == -1 and str(result) not in roulette_black:
-                    clrwin = -1
-                    print('Lost Farbentest')
-                    return
-                if farbe == -2 and str(result) in roulette_red:
-                        clrwin = 1
-                        print('Won Farbentest')
-                        return
-                elif farbe == -2 and str(result) not in roulette_red:
-                    clrwin = -1
-                    print ('Lost Farbentest')
-                    return
-                elif farbe == -3 and str(result) in roulette_green:
-                    clrwin = 1
-                elif farbe == -3 and str(result) not in roulette_green:
-                    clrwin = -1
-                    return
-                else:
-                    clrwin = -1
-                    print('No Color')
-                    return
-
-            async def gerade_ungerade():
-                global result
-                global zahl
-                global eowin
-                global error
-
-                try:
-                    if tip == 'odd' or tip == 'ungleich':
-                        if str(result) not in roulette_even:
-                            eowin = 1
-                            error = 0
-                        if str(result) in roulette_even:
-                            eowin = -1
-                            error = 0
-                    if tip == 'even' or tip == 'gleich':
-                        if str(result) in roulette_even:
-                            eowin = 1
-                            error = 0
-                        if str(result) not in roulette_even:
-                            eowin = -1
-                            error = 0
-                except:
-                    error = 1
-
-            async def resulttest():
-                global nmbwin
-                global clrwin
-                global win
-                global eowin
-                global first12
-                global second12
-                global third12
-                global result
-
-                if str(result) in roulette_black:
-                    farbe_result = 'black'
-                elif str(result) in roulette_green:
-                    farbe_result = 'green'
-                else:
-                    farbe_result = 'red'
-
-                if nmbwin == 1 or clrwin == 1 or eowin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
-                    await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
-                    print("----------------------------------------------------------")
-                    return
-                else:
-                    await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
-                    print("----------------------------------------------------------")
-                    return
-
             try:
                 tip = message.content.split(' ')[1]
             except IndexError:
@@ -359,11 +412,22 @@ class MyClient(discord.Client):
                     await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nochmal.')
                     return
                 else:
-                    zahl = str(tip)
-
+                        clrwin = -1
+                        print("No Color input")
+                        await zahlentest()
             except ValueError:
-                await farbeninput()
-                await gerade_ungerade()
+                nmbwin = -1
+                if tip == 'random' or tip == 'zufall':
+                    await random_tip()
+                    return
+                print("No Number input")
+                if tip == 'black' or tip == 'schwarz' or tip == 'red' or tip == 'rot' or tip == 'green' or tip == 'grün':
+                    await farbeninput()
+                    await farbentest()
+                    return
+                if tip == 'odd' or tip == 'ungleich' or tip == 'even' or tip == 'gleich':
+                    await gerade_ungerade()
+                    return
                 # error = 1 == no color detected
                 if error == 1:
                     await message.channel.send(
@@ -372,17 +436,9 @@ class MyClient(discord.Client):
                     print("----------------------------------------------------------")
                     return
 
-            if farbe != '0':
-                nmbwin = -1
-                print("No Number input")
-                await farbentest()
-            else:
-                clrwin = -1
-                print("No Color input")
 
-                await zahlentest()
 
-            await resulttest()
+
 
 
 
