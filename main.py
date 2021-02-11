@@ -13,6 +13,7 @@ roulette_firsttwelve = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11',
 roulette_secondtwelve = ['13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
 roulette_thirtwelve = ['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36']
 users = {}
+stats = {}
 mods = []
 userlist = []
 messagecode = 0
@@ -35,10 +36,20 @@ try:
                 users[user] = wealth
                 userlist.append(user + ':' + users[user])
         users_file.close()
+
     with open("mods.txt", "r") as mods_file:
         f = mods_file.read()
         mods = f.splitlines()
         users_file.close()
+
+    with open("stats.txt", "r") as stats_file:
+        for line in stats_file:
+            if line.strip():
+                user, wins_looses = line.strip().split('|')
+                stats[user] = wins_looses
+                userlist.append(user + ':' + stats[user])
+        stats_file.close()
+
 except FileNotFoundError:
     users = {}
     mods = {}
@@ -298,6 +309,22 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
 
+        if message.content == '/stats':
+            username = message.author.id
+            if str(username) in users:
+                stats[username] = wins_looses
+                wins_looses.split('|')
+                wins = wins_looses[0]
+                looses = wins_looses[1]
+                
+                await message.channel.send('```'
+                                           + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(username))
+                                           + '\n \n' + 'Wins: ' + wins + 'Looses: ' + looses
+                                           + '\n' + '```')
+
+
+
+
         if message.content.startswith('/mod'):
             global new_mod
 
@@ -441,10 +468,6 @@ class MyClient(discord.Client):
                     print('Error: invalid color')
                     print("----------------------------------------------------------")
                     return
-
-
-
-
 
 
 
