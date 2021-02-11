@@ -53,10 +53,12 @@ try:
 except FileNotFoundError:
     users = {}
     mods = {}
+    stats = {}
 
 def add_user():
-    f = open("users.txt", "a")
     global messagecode
+
+    f = open("users.txt", "a")
     if user in users:
         messagecode = 2
     else:
@@ -64,6 +66,15 @@ def add_user():
         f.flush()
         messagecode = 1
         f.close()
+    b = open("stats.txt", "a")
+
+    if user in stats:
+        messagecode = 2
+    else:
+        b.writelines(str(user) + "0|0" + "\n")
+        b.flush()
+        messagecode = 1
+        b.close()
 
 def add_mod():
     mods.append(new_mod)
@@ -311,7 +322,7 @@ class MyClient(discord.Client):
 
         if message.content == '/stats':
             username = message.author.id
-            if str(username) in users:
+            if str(username) in stats:
                 stats[username] = wins_looses
                 wins_looses.split('|')
                 wins = wins_looses[0]
@@ -321,7 +332,8 @@ class MyClient(discord.Client):
                                            + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(username))
                                            + '\n \n' + 'Wins: ' + wins + 'Looses: ' + looses
                                            + '\n' + '```')
-
+            else:
+                await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
         if message.content.startswith('/mod'):
             global new_mod
 
@@ -364,7 +376,6 @@ class MyClient(discord.Client):
                         users[str(userid)] = newbalance
                         for k in users.keys():
                             users_file.write("{}:{}\n".format(k, users[k]))
-
                         users_file.close()
                     print('Old Balance: ' + str(old_balance) + '€')
                     print('New Balance: ' + str(users[str(userid)]) + '€')
@@ -378,7 +389,6 @@ class MyClient(discord.Client):
                 print(str(message.author) + ' tried to change the account balance of '
                       + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
                 print("----------------------------------------------------------")
-
 
         if message.content == '/register':
             global user
@@ -464,6 +474,10 @@ class MyClient(discord.Client):
                     print('Error: invalid color')
                     print("----------------------------------------------------------")
                     return
+
+
+
+
 
 
 
