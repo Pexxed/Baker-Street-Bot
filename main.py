@@ -316,14 +316,11 @@ class MyClient(discord.Client):
                 wins_looses.split('|')
                 wins = wins_looses[0]
                 looses = wins_looses[1]
-                
+
                 await message.channel.send('```'
                                            + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(username))
                                            + '\n \n' + 'Wins: ' + wins + 'Looses: ' + looses
                                            + '\n' + '```')
-
-
-
 
         if message.content.startswith('/mod'):
             global new_mod
