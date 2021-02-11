@@ -408,6 +408,9 @@ class MyClient(discord.Client):
             print(str(message.author))
             print('Tip: ' + tip)
 
+            if str(tip) == 'x':
+                await message.channel.send(" Dein Einsatz konnte nicht hinterlegt werden, gebe anstatt 'x' eine Zahl von 00 bis 36 ein.")
+
             result = random.randint(-1, 36)
             if result == -1:
                 result = '00'
