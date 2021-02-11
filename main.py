@@ -345,7 +345,6 @@ class MyClient(discord.Client):
 
         if message.content.startswith('/give'):
             global newbalance
-            global username
             global user_id
             global user_balance
 
