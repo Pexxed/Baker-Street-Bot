@@ -256,6 +256,8 @@ class MyClient(discord.Client):
             global result
             global randomwin
             global tip
+            global wins
+            global looses
 
             if str(result) in roulette_black:
                 farbe_result = 'black'
@@ -265,10 +267,12 @@ class MyClient(discord.Client):
                 farbe_result = 'red'
 
             if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
+                wins += 1
                 await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
                 print("----------------------------------------------------------")
                 return
             else:
+                looses += 1
                 await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
                 print("----------------------------------------------------------")
                 return
@@ -322,13 +326,15 @@ class MyClient(discord.Client):
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
 
         if message.content == '/stats':
+            global wins
+            global looses
+
             username = str(message.author.id)
             if username in stats:
                 stats[username] = wins_looses
                 wins_looses.split('|')
                 wins = wins_looses[0]
                 looses = wins_looses[2]
-
                 try:
                     win_loose_rate = int(wins) / int(looses)
                 except ZeroDivisionError:
