@@ -205,19 +205,20 @@ class MyClient(discord.Client):
                 tip = str(random.randint(-1, 36))
                 if tip == '-1':
                     tip = '00'
+
                 print('Tip: ' + tip)
                 if tip == str(result):
                     randomwin = 1
                     error = 0
                     print('Won random tip')
-                await resulttest()
-                return
-            else:
-                randomwin = -1
-                error = 0
-                print('Lost random tip')
-                await resulttest()
-                return
+                    await resulttest()
+                    return
+                else:
+                    randomwin = -1
+                    error = 0
+                    print('Lost random tip')
+                    await resulttest()
+                    return
 
 
         async def resulttest():
@@ -239,11 +240,11 @@ class MyClient(discord.Client):
                 farbe_result = 'red'
 
             if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
-                await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
+                await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + 'Dein Tipp: ' + tip)
                 print("----------------------------------------------------------")
                 return
             else:
-                await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')')
+                await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + 'Dein Tipp: ' + tip)
                 print("----------------------------------------------------------")
                 return
 
