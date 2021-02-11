@@ -165,7 +165,7 @@ class MyClient(discord.Client):
             global error
 
             try:
-                if tip == 'odd' or tip == 'ungleich':
+                if tip == 'odd' or tip == 'ungerade':
                     if str(result) not in roulette_even:
                         eowin = 1
                         error = 0
@@ -178,7 +178,7 @@ class MyClient(discord.Client):
                         print('Lost Odd or Even')
                         await resulttest()
                         return
-                if tip == 'even' or tip == 'gleich':
+                if tip == 'even' or tip == 'gerade':
                     if str(result) in roulette_even:
                         eowin = 1
                         error = 0
@@ -231,6 +231,7 @@ class MyClient(discord.Client):
             global third12
             global result
             global randomwin
+            global tip
 
             if str(result) in roulette_black:
                 farbe_result = 'black'
@@ -238,6 +239,11 @@ class MyClient(discord.Client):
                 farbe_result = 'green'
             else:
                 farbe_result = 'red'
+
+            if tip == 'odd':
+                tip = 'ungerade'
+            if tip == 'even':
+                tip == 'gerade'
 
             if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
                 await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
