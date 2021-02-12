@@ -1,7 +1,6 @@
 import discord
 import random
 import time
-import os
 
 leaderboard = {}
 roulette_black = ['2', '4', '6', '8', '10', '11', '13', '15', '17', '20', '22', '24', '26', '28', '29', '31', '33', '35']
@@ -11,7 +10,7 @@ roulette_even = ['2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22', '
 roulette_onetoeiteen = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
 roulette_firsttwelve = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 roulette_secondtwelve = ['13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
-roulette_thirtwelve = ['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36']
+roulette_thirdwelve = ['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36']
 users = {}
 statslist = []
 stats = {}
@@ -28,8 +27,11 @@ randomwin = 0
 farbe = '0'
 zahl = -1
 error = 0
-bet = 0
-won = 0
+bet = 0.0
+won = 0.0
+
+tip_of_the_week = '17'
+mindesteinsatz = 0.1
 
 try:
     with open("users.txt", "r") as users_file:
@@ -91,6 +93,11 @@ def add_mod():
     f.close()
     mods.append(new_mod)
 
+def remove_mod():
+    mods.remove(remove_mod())
+    with open("mods.txt", "w") as mods_file:
+            mods_file.write("\n".join(mods))
+    mods_file.close()
 
 def addloose(added_lost):
     global won
@@ -99,38 +106,48 @@ def addloose(added_lost):
     global player_id
 
     playerstats = stats[str(player_id)].split('|')
+    newbalance = float(users[str(player_id)]) - added_lost
 
-    int(lost)
-    lost += int(added_lost)
+    lost = 0.0
+    lost += float(added_lost)
     playerstats[0] = won
     playerstats[1] = lost
 
     playerstats = str(won) + '|' + str(lost)
-    stats[player_id] = playerstats
 
+    with open("users.txt", "w") as users_file:
+        users[str(player_id)] = newbalance
+        for k in users.keys():
+            users_file.write("{}:{}\n".format(k, users[k]))
+        users_file.close()
+
+    stats[player_id] = playerstats
     with open("stats.txt", "w") as stats_file:
         for k in users.keys():
             stats_file.write("{}:{}\n".format(k, stats[k]))
     stats_file.close()
 
-
 def addwin(added_won):
-    global won
     global won
     global looses
     global player
     global player_id
 
     playerstats = stats[str(player_id)].split('|')
-
-    int(won)
-    won += int(added_won)
+    newbalance = float(users[str(player_id)]) + added_won
+    won = 0.0
+    won += float(added_won)
     playerstats[0] = won
     playerstats[1] = lost
-
     playerstats = str(won) + '|' + str(lost)
-    stats[player_id] = playerstats
 
+    with open("users.txt", "w") as users_file:
+        users[str(player_id)] = newbalance
+        for k in users.keys():
+            users_file.write("{}:{}\n".format(k, users[k]))
+        users_file.close()
+
+    stats[player_id] = playerstats
     with open("stats.txt", "w") as stats_file:
         for k in users.keys():
             stats_file.write("{}:{}\n".format(k, stats[k]))
@@ -147,19 +164,6 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.author == client.user:
             return
-
-        if message.content == '/help':
-            await message.channel.send('```'
-                                       + '\n' + '--------------------------------------------------------------------------'
-                                       + '\n' + 'Allgemein:'
-                                       + '\n' + '/help | /register | /stats <userid> | /leaderboard | /permissions | /permissions <userid>'
-                                       + '\n' + '--------------------------------------------------------------------------'
-                                       + '\n' + 'Roulette:'
-                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip odd | /tip even | /tip x'
-                                       + '\n' + '/tip random'
-                                       + '\n' + '--------------------------------------------------------------------------'
-                                       + '\n' + 'Mods:'
-                                       + '\n' + '/give <userid> | /mod <username>' + '```')
 
         async def farbeninput():
             global farbe
@@ -268,6 +272,45 @@ class MyClient(discord.Client):
                         return
             except:
                 error = 1
+
+        async def firsttwelve():
+            global first12
+            global result
+
+            if str(result) in roulette_firsttwelve:
+                first12 = 1
+                print('Won First12')
+            else:
+                first12 = 0
+                print('Lost First12')
+            await resulttest()
+            return
+
+        async def secondtwelve():
+            global second12
+            global result
+
+            if str(result) in roulette_secondtwelve:
+                second12 = 1
+                print('Won Second12')
+            else:
+                second12 = 0
+                print('Lost Second12')
+            await resulttest()
+            return
+
+        async def thirdtwelve():
+            global third12
+            global result
+
+            if str(result) in roulette_thirdwelve:
+                third12 = 1
+                print('Won Third12')
+            else:
+                third12 = 0
+                print('Lost Third12')
+            await resulttest()
+            return
 
         async def random_tip():
             global tip
@@ -390,6 +433,19 @@ class MyClient(discord.Client):
                 addloose(added_looses)
                 return
 
+        if message.content == '/help':
+            await message.channel.send('```'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + 'Allgemein:'
+                                       + '\n' + '/help | /register | /stats <userid> | /leaderboard | /permissions | /permissions <userid>'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + 'Roulette:'
+                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip odd | /tip even'
+                                       + '\n' + '/tip first12 | /tip second12 | /tip thirdtwelve | /tip x | /tip x <bet> | /tip random | /tipderWoche'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + 'Mods:'
+                                       + '\n' + '/give <userid> | /mod <username>' + '```')
+
         if message.content == '/leaderboard':
             ranking = sorted(users, key=users.get, reverse=True)
             await message.channel.send('```'
@@ -467,8 +523,10 @@ class MyClient(discord.Client):
 
         if message.content.startswith('/mod'):
             global new_mod
+            global removed_mod
 
             new_mod = message.content.split(' ')[1]
+            removed_mod = new_mod
             if str(message.author.id) in mods:
                 if new_mod not in mods:
                     add_mod()
@@ -476,9 +534,9 @@ class MyClient(discord.Client):
                     print(message.author + ' added ' + new_mod + ' to mods')
                     print("----------------------------------------------------------")
                 else:
-                    await message.channel.send('`' + str(await client.fetch_user(new_mod)) + ' is already a mod`')
-                    print(message.author + ' tried to add ' + new_mod + ' to mods')
-                    print('Error: User is already a mod')
+                    remove_mod()
+                    await message.channel.send('`Removed mod: ' + str(await client.fetch_user(removed_mod)) + '`')
+                    print(message.author + ' removed ' + removed_mod + ' from mods')
                     print("----------------------------------------------------------")
             else:
                 await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
@@ -501,9 +559,7 @@ class MyClient(discord.Client):
             old_balance = users[userid]
             if str(message.author.id) in mods:
                 if str(userid) in users:
-                    os.remove('users.txt')
-                    open("users.txt", "x")
-                    with open("users.txt", "r+") as users_file:
+                    with open("users.txt", "w") as users_file:
                         users[str(userid)] = newbalance
                         for k in users.keys():
                             users_file.write("{}:{}\n".format(k, users[k]))
@@ -521,6 +577,9 @@ class MyClient(discord.Client):
                 print(str(message.author) + ' tried to change the account balance of '
                       + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
                 print("----------------------------------------------------------")
+
+        if message.content == '/tipoftheweek' or message.content == '/tipderWoche':
+            await message.channel.send('`' + 'The Tip of the week is: ' + tip_of_the_week + '`')
 
         if message.content == '/register':
             global user
@@ -557,12 +616,12 @@ class MyClient(discord.Client):
             global third12
             global player
             global player_id
+            global mindesteinsatz
 
             try:
                 tip_bet = message.content.split(' ')[1:]
                 tip_bet = ' '.join(tip_bet)
                 tip,bet = tip_bet.split(' ')
-
             except IndexError:
                 await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nochmal.')
                 print(str(message.author))
@@ -571,24 +630,28 @@ class MyClient(discord.Client):
                 return
             except ValueError:
                 tip = message.content.split(' ')[1]
-                bet = 0
+                bet = 0.0
+
             player = message.author
             player_id = str(message.author.id)
             print(str(player))
             print('Tip: ' + str(tip))
-            try:
-                bet = bet.replace('€','')
-            except AttributeError:
-                try:
-                    bet = bet.replace('$', '')
-                except AttributeError:
-                    bet = 0
 
-            print('Bet: ' + str(bet))
+            bet = float(str(bet).replace('€', ''))
+            bet = float(str(bet).replace('$', ''))
+            if bet < mindesteinsatz and bet != 0:
+                await message.channel.send("Dein Einsatz konnte nicht hinterlegt werden, der Mindesteinsatz beträgt" + str(mindesteinsatz) + ".")
 
+            print('Bet: ' + str(bet) + '€')
             if str(tip) == 'x':
                 await message.channel.send(
-                    " Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
+                    "Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
+
+            if bet == 0.0:
+                pass
+            elif bet > float(users[player_id]):
+                await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, dein Guthaben reicht nicht aus.')
+                return
 
             result = random.randint(-1, 36)
             if result == -1:
@@ -619,6 +682,15 @@ class MyClient(discord.Client):
                     return
                 if tip == 'odd' or tip == 'even':
                     await gerade_ungerade()
+                    return
+                if tip == 'first12':
+                    await firsttwelve()
+                    return
+                if tip == 'second12':
+                    await secondtwelve()
+                    return
+                if tip == 'third12':
+                    await thirdtwelve()
                     return
                 # error = 1 == no color detected
                 if error == 1:
