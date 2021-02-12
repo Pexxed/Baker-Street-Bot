@@ -28,6 +28,8 @@ randomwin = 0
 farbe = '0'
 zahl = -1
 error = 0
+bet = 0
+won = 0
 
 try:
     with open("users.txt", "r") as users_file:
@@ -46,11 +48,11 @@ try:
     with open("stats.txt", "r") as stats_file:
         for line in stats_file:
             if line.strip():
-                user, wins_looses = line.strip().split(':')
-                stats[user] = wins_looses
-                wins_looses.split('|')
-                wins = wins_looses[0]
-                looses = wins_looses[2]
+                user, won_lost = line.strip().split(':')
+                stats[user] = won_lost
+                won_lost.split('|')
+                won = int(won_lost[0])
+                lost = int(won_lost[2])
                 statslist.append(user + ':' + stats[user])
         stats_file.close()
 
@@ -58,6 +60,7 @@ except FileNotFoundError:
     users = {}
     mods = {}
     stats = {}
+
 
 def add_user():
     global messagecode
@@ -80,12 +83,59 @@ def add_user():
         messagecode = 1
         b.close()
 
+
 def add_mod():
-    mods.append(new_mod)
     f = open("mods.txt", "a")
     f.write(new_mod + '\n')
     f.flush()
     f.close()
+    mods.append(new_mod)
+
+
+def addloose(added_lost):
+    global won
+    global lost
+    global player
+    global player_id
+
+    playerstats = stats[str(player_id)].split('|')
+
+    int(lost)
+    lost += int(added_lost)
+    playerstats[0] = won
+    playerstats[1] = lost
+
+    playerstats = str(won) + '|' + str(lost)
+    stats[player_id] = playerstats
+
+    with open("stats.txt", "w") as stats_file:
+        for k in users.keys():
+            stats_file.write("{}:{}\n".format(k, stats[k]))
+    stats_file.close()
+
+
+def addwin(added_won):
+    global won
+    global won
+    global looses
+    global player
+    global player_id
+
+    playerstats = stats[str(player_id)].split('|')
+
+    int(won)
+    won += int(added_won)
+    playerstats[0] = won
+    playerstats[1] = lost
+
+    playerstats = str(won) + '|' + str(lost)
+    stats[player_id] = playerstats
+
+    with open("stats.txt", "w") as stats_file:
+        for k in users.keys():
+            stats_file.write("{}:{}\n".format(k, stats[k]))
+    stats_file.close()
+
 
 class MyClient(discord.Client):
     # Einloggen
@@ -102,7 +152,7 @@ class MyClient(discord.Client):
             await message.channel.send('```'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
-                                       + '\n' + '/help | /register | /stats | /leaderboard | /permissions | /permissions <userid>'
+                                       + '\n' + '/help | /register | /stats <userid> | /leaderboard | /permissions | /permissions <userid>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
                                        + '\n' + '/start r | /tip black | /tip red | /tip green | /tip odd | /tip even | /tip x'
@@ -183,8 +233,6 @@ class MyClient(discord.Client):
                 await resulttest()
                 return
 
-
-
         async def gerade_ungerade():
             global result
             global zahl
@@ -248,6 +296,8 @@ class MyClient(discord.Client):
                     return
 
         async def resulttest():
+            global player
+            global player_id
             global nmbwin
             global clrwin
             global win
@@ -258,7 +308,7 @@ class MyClient(discord.Client):
             global result
             global randomwin
             global tip
-            global wins
+            global won
             global looses
 
             if str(result) in roulette_black:
@@ -268,15 +318,76 @@ class MyClient(discord.Client):
             else:
                 farbe_result = 'red'
 
-            if nmbwin == 1 or clrwin == 1 or eowin == 1 or randomwin == 1 or first12 == 1 or second12 == 1 or third12 == 1:
-                await message.channel.send('Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
+            if nmbwin == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
                 print("----------------------------------------------------------")
-                wins += 1
+                added_won = bet * 35
+                addwin(added_won)
+                nmbwin = 0
+                return
+            elif clrwin == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 2
+                addwin(added_won)
+                clrwin = 0
+                return
+            elif eowin == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 2
+                addwin(added_won)
+                eowin = 0
+                return
+            elif randomwin == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 35
+                addwin(added_won)
+                randomwin = 0
+                return
+            elif first12 == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 4
+                addwin(added_won)
+                first12 = 0
+                return
+            elif second12 == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 4
+                addwin(added_won)
+                second12 = 0
+                return
+            elif third12 == 1:
+                await message.channel.send(
+                    'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
+                print("----------------------------------------------------------")
+                added_won = bet * 4
+                addwin(added_won)
+                third12 = 0
                 return
             else:
-                await message.channel.send('Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(tip))
+                await message.channel.send(
+                    'Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
+                        tip))
                 print("----------------------------------------------------------")
-                looses += 1
+                added_looses = bet
+                addloose(added_looses)
                 return
 
         if message.content == '/leaderboard':
@@ -307,7 +418,6 @@ class MyClient(discord.Client):
                                        + '\n' + '```')
 
         if message.content.startswith('/permissions'):
-            global new_mod
             try:
                 requested_user_rank = message.content.split(' ')[1]
             except IndexError:
@@ -316,35 +426,41 @@ class MyClient(discord.Client):
             if requested_user_rank in users:
                 if str(requested_user_rank) in mods:
                     await message.channel.send('```'
-                                                + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(requested_user_rank))
-                                                + '\n \n' + 'Ranks: Moderator, Player'
-                                                + '\n' + '```')
+                                               + '\n' + 'Showing Permissions for: ' + str(
+                        await client.fetch_user(requested_user_rank))
+                                               + '\n \n' + 'Ranks: Moderator, Player'
+                                               + '\n' + '```')
                 else:
                     await message.channel.send('```'
-                                                + '\n' + 'Showing Permissions for: ' + str(await client.fetch_user(requested_user_rank))
-                                                + '\n \n' + 'Rank: Player'
-                                                + '\n' + '```')
+                                               + '\n' + 'Showing Permissions for: ' + str(
+                        await client.fetch_user(requested_user_rank))
+                                               + '\n \n' + 'Rank: Player'
+                                               + '\n' + '```')
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
 
-        if message.content == '/stats':
-            global wins
-            global looses
+        if message.content.startswith('/stats'):
+            global won
+            global lost
+            global balance
 
-            username = str(message.author.id)
+            try:
+                username = str(message.content.split(' ')[1])
+            except IndexError:
+                username = str(message.author.id)
+
+            playerstats = stats[str(username)].split('|')
+
+            won = playerstats[0]
+            lost = playerstats[1]
+
             if username in stats:
-                stats[username] = wins_looses
-                wins_looses.split('|')
-                wins = wins_looses[0]
-                looses = wins_looses[2]
-                try:
-                    win_loose_rate = int(wins) / int(looses)
-                except ZeroDivisionError:
-                    win_loose_rate = int(wins)
-
+                balance = users[username]
                 await message.channel.send('```'
-                                           + '\n' + 'Showing Statistics for: ' + str(await client.fetch_user(int(username)))
-                                           + '\n \n' + 'Wins: ' + wins + ' Looses: ' + looses + ' W/L rate: ' + str(win_loose_rate)
+                                           + '\n' + 'Showing Statistics for: ' + str(
+                    await client.fetch_user(int(username)))
+                                           + '\n \n' + 'Won: ' + str(won) + '€' + ' Lost: ' + str(
+                    lost) + '€' + ' Balance: ' + str(balance) + '€'
                                            + '\n' + '```')
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
@@ -400,7 +516,8 @@ class MyClient(discord.Client):
                 else:
                     print('Error: Userid not found')
             else:
-                await message.channel.send('Fehlende Berechtigungen: Die Account balance konnte nicht verändert werden.')
+                await message.channel.send(
+                    'Fehlende Berechtigungen: Die Account balance konnte nicht verändert werden.')
                 print(str(message.author) + ' tried to change the account balance of '
                       + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
                 print("----------------------------------------------------------")
@@ -438,21 +555,40 @@ class MyClient(discord.Client):
             global first12
             global second12
             global third12
+            global player
+            global player_id
 
             try:
-                tip = message.content.split(' ')[1]
+                tip_bet = message.content.split(' ')[1:]
+                tip_bet = ' '.join(tip_bet)
+                tip,bet = tip_bet.split(' ')
+
             except IndexError:
                 await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nochmal.')
                 print(str(message.author))
                 print('Error: Invalid Input')
                 print("----------------------------------------------------------")
                 return
+            except ValueError:
+                tip = message.content.split(' ')[1]
+                bet = 0
+            player = message.author
+            player_id = str(message.author.id)
+            print(str(player))
+            print('Tip: ' + str(tip))
+            try:
+                bet = bet.replace('€','')
+            except AttributeError:
+                try:
+                    bet = bet.replace('$', '')
+                except AttributeError:
+                    bet = 0
 
-            print(str(message.author))
-            print('Tip: ' + tip)
+            print('Bet: ' + str(bet))
 
             if str(tip) == 'x':
-                await message.channel.send(" Dein Einsatz konnte nicht hinterlegt werden, gebe anstatt 'x' eine Zahl von 00 bis 36 ein.")
+                await message.channel.send(
+                    " Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
 
             result = random.randint(-1, 36)
             if result == -1:
@@ -463,12 +599,14 @@ class MyClient(discord.Client):
                 if int(tip) > 36:
                     print("Error: invalid tip")
                     print("----------------------------------------------------------")
-                    await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nochmal.')
+                    await message.channel.send(
+                        'Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nochmal.')
                     return
                 else:
-                        clrwin = -1
-                        print("No Color input")
-                        await zahlentest()
+                    clrwin = -1
+                    zahl = int(tip)
+                    print("No Color input")
+                    await zahlentest()
             except ValueError:
                 nmbwin = -1
                 if tip == 'random' or tip == 'zufall':
@@ -489,11 +627,6 @@ class MyClient(discord.Client):
                     print('Error: invalid color')
                     print("----------------------------------------------------------")
                     return
-
-
-
-
-
 
 
 client = MyClient()
