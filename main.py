@@ -2,6 +2,7 @@ import discord
 import random
 import time
 
+
 leaderboard = {}
 roulette_black = ['2', '4', '6', '8', '10', '11', '13', '15', '17', '20', '22', '24', '26', '28', '29', '31', '33', '35']
 roulette_red = ['1', '3', '5', '7', '9', '12', '14', '16', '18', '19', '21', '23', '25', '27', '30', '32', '34', '36']
@@ -107,19 +108,20 @@ def addlose(added_lost):
     global player
     global player_id
     global bet
+    global added_balance
+    global lost_balance
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) - added_lost
+    newbalance = float(users[str(player_id)]) - lost_balance
+    print('New balance= ' + newbalance)
 
-    lost = 0.0
-    lost += float(added_lost)
+    lost = float(added_lost) + playerstats[1]
     playerstats[0] = won
     playerstats[1] = lost
+    playerstats = str(playerstats[0]) + '|' + str(playerstats[1])
 
-    playerstats = str(won) + '|' + str(lost)
-
+    users[str(player_id)] = newbalance
     with open("users.txt", "w") as users_file:
-        users[str(player_id)] = newbalance
         for k in users.keys():
             users_file.write("{}:{}\n".format(k, users[k]))
         users_file.close()
@@ -132,21 +134,23 @@ def addlose(added_lost):
 
 def addwin(added_won):
     global won
-    global looses
+    global lost
     global player
     global player_id
     global bet
+    global added_balance
+    global lost_balance
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) + added_won
-    won = playerstats[0]
-    won += float(added_won)
+    newbalance = float(users[str(player_id)]) + added_balance
+
+    won = float(added_won) + playerstats[0]
     playerstats[0] = won
     playerstats[1] = lost
-    playerstats = str(won) + '|' + str(lost)
+    playerstats = str(playerstats[0]) + '|' + str(playerstats[1])
 
+    users[str(player_id)] = newbalance
     with open("users.txt", "w") as users_file:
-        users[str(player_id)] = newbalance
         for k in users.keys():
             users_file.write("{}:{}\n".format(k, users[k]))
         users_file.close()
@@ -357,7 +361,9 @@ class MyClient(discord.Client):
             global randomwin
             global tip
             global won
-            global looses
+            global lost
+            global added_balance
+            global lost_balance
 
             if str(result) in roulette_black:
                 farbe_result = 'black'
@@ -371,7 +377,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 35
+                added_won = (bet * 35) - bet
+                added_balance = (bet * 35) - bet
                 addwin(added_won)
                 nmbwin = 0
                 return
@@ -380,7 +387,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 2
+                added_won = (bet * 2) - bet
+                added_balance = (bet * 2) - bet
                 addwin(added_won)
                 clrwin = 0
                 return
@@ -389,7 +397,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 2
+                added_won = (bet * 2) - bet
+                added_balance = (bet * 2) - bet
                 addwin(added_won)
                 eowin = 0
                 return
@@ -398,7 +407,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 35
+                added_won = (bet * 35) - bet
+                added_balance = (bet * 35) - bet
                 addwin(added_won)
                 randomwin = 0
                 return
@@ -407,7 +417,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 4
+                added_won = (bet * 4) - bet
+                added_balance = (bet * 4) - bet
                 addwin(added_won)
                 first12 = 0
                 return
@@ -416,7 +427,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 4
+                added_won = (bet * 4) - bet
+                added_balance = (bet * 4) - bet
                 addwin(added_won)
                 second12 = 0
                 return
@@ -425,7 +437,8 @@ class MyClient(discord.Client):
                     'Du hast gewonnen! ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_won = bet * 4
+                added_won = (bet * 4) - bet
+                added_balance = (bet * 4) - bet
                 addwin(added_won)
                 third12 = 0
                 return
@@ -434,8 +447,9 @@ class MyClient(discord.Client):
                     'Leider verloren ' + '(' + str(result) + ' / ' + str(farbe_result) + ')' + ' Dein Tipp: ' + str(
                         tip))
                 print("----------------------------------------------------------")
-                added_looses = bet
-                addlose(added_looses)
+                added_lost = bet
+                lost_balance = bet
+                addlose(added_lost)
                 return
 
         global prefix
@@ -525,7 +539,19 @@ class MyClient(discord.Client):
                 await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
                 print(str(message.author) + ' tried to set the Prefix to ' + str(temp) + "'")
                 print('Error: Missing permissions')
-                print("----------------------------------------------------------")
+                print("----------------------------------------------------------")#
+
+        if message.content.startswith(prefix + 'clear evidence'):
+            msg_to_delete = int(message.content.split(' ')[2])
+
+            if msg_to_delete == 1:
+                await message.channel.send('Clearing ' + str(msg_to_delete) + ' message')
+            elif msg_to_delete < 1:
+                await message.channel.send('Fehler, bitte gebe eine positive Zahl ein')
+            else:
+                await message.channel.send('Clearing ' + str(msg_to_delete) + ' messages')
+            await message.delete()
+
 
         if message.content == prefix + 'backup users.txt':
             if str(message.author.id) in mods:
