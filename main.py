@@ -139,7 +139,7 @@ def addwin(added_won):
 
     playerstats = stats[str(player_id)].split('|')
     newbalance = float(users[str(player_id)]) + added_won - bet
-    won = 0.0
+    won = playerstats[0]
     won += float(added_won)
     playerstats[0] = won
     playerstats[1] = lost
