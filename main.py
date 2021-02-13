@@ -650,11 +650,11 @@ class MyClient(discord.Client):
             global user_balance
 
             user_balance = message.content.split(' ')[1:]
-            userid = user_balance[1]
+            userid = user_balance[0]
             try:
                 newbalance = str(user_balance[1])
-                newbalance = float(str(minimumbet).replace('€', ''))
-                newbalance = float(str(minimumbet).replace('$', ''))
+                newbalance = float(str(newbalance).replace('€', ''))
+                newbalance = float(str(newbalance).replace('$', ''))
             except IndexError:
                 await message.channel.send('Geld konnte nicht hinzugefügt werden')
             old_balance = users[userid]
@@ -669,14 +669,14 @@ class MyClient(discord.Client):
                     print('New Balance: ' + str(users[str(userid)]) + '€')
                     print("----------------------------------------------------------")
                     await message.channel.send("Changed Account Balance of " + str(await client.fetch_user(userid))
-                                               + " to " + newbalance + '€')
+                                               + " to " + str(newbalance) + '€')
                 else:
                     print('Error: Userid not found')
             else:
                 await message.channel.send(
                     'Fehlende Berechtigungen: Die Account balance konnte nicht verändert werden.')
                 print(str(message.author) + ' tried to change the account balance of '
-                      + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
+                      + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + str(newbalance) + '€')
                 print("----------------------------------------------------------")
 
         if message.content == prefix + 'weeklytip':
