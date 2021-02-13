@@ -112,8 +112,8 @@ def addlose(added_lost):
     global lost_balance
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) - lost_balance
-    print('New balance= ' + str(newbalance))
+    newbalance = Decimal(float(users[str(player_id)]) - lost_balance)
+    newbalance = round(newbalance, 2)
 
     lost = Decimal(float(added_lost) + float(playerstats[1]))
     lost = round(lost,2)
@@ -143,8 +143,8 @@ def addwin(added_won):
     global lost_balance
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) + added_balance
-    print('New balance= ' + str(newbalance))
+    newbalance = Decimal(float(users[str(player_id)]) + added_balance)
+    newbalance = round(newbalance,2)
 
     won = Decimal(float(added_won) + float(playerstats[0]))
     won = round(won,2)
