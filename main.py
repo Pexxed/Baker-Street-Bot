@@ -31,7 +31,9 @@ bet = 0.0
 won = 0.0
 
 tip_of_the_week = '17'
-mindesteinsatz = 0.1
+minimumbet = 0.1
+maximumbet = 500.0
+prefix = '/'
 
 try:
     with open("users.txt", "r") as users_file:
@@ -99,7 +101,7 @@ def remove_mod():
             mods_file.write("\n".join(mods))
     mods_file.close()
 
-def addloose(added_lost):
+def addlose(added_lost):
     global won
     global lost
     global player
@@ -155,6 +157,7 @@ def addwin(added_won):
 
 
 class MyClient(discord.Client):
+    global prefix
     # Einloggen
     async def on_ready(self):
         print("Logged In")
@@ -430,61 +433,145 @@ class MyClient(discord.Client):
                         tip))
                 print("----------------------------------------------------------")
                 added_looses = bet
-                addloose(added_looses)
+                addlose(added_looses)
                 return
 
-        if message.content == '/help':
+        global prefix
+        global tip_of_the_week
+        global minimumbet
+        global maximumbet
+
+        if message.content == prefix + 'help':
             await message.channel.send('```'
                                        + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + "The Prefix is: '" + prefix + "'"
+                                       + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
-                                       + '\n' + '/help | /register | /stats <userid> | /leaderboard | /permissions | /permissions <userid>'
+                                       + '\n' + 'help | register | stats <userid> | leaderboard'
+                                       + '\n' + 'permissions permissions <userid>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
-                                       + '\n' + '/start r | /tip black | /tip red | /tip green | /tip odd | /tip even'
-                                       + '\n' + '/tip first12 | /tip second12 | /tip thirdtwelve | /tip x | /tip x <bet> | /tip random | /tipderWoche'
+                                       + '\n' + 'start r | tip black | tip red | tip green | tip odd | tip even'
+                                       + '\n' + 'tip first12 | tip second12 | tip third12 | tip x | tip x <bet>'
+                                       + '\n' + 'tip random | weeklytip'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Mods:'
-                                       + '\n' + '/give <userid> | /mod <username>' + '```')
+                                       + '\n' + 'give <userid> | mod <userid> | backup <file.txt>'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '\n' + 'Settings:'
+                                       + '\n' + 'set minimumbet | set maximumbet | set weeklytip | set prefix'
+                                       + '\n' + '--------------------------------------------------------------------------'
+                                       + '```')
 
-        if message.content == '/leaderboard':
-            temporaryusers = {}
-            for i in users:
-                temporaryusers[i]=[]
-                for j in users[i]:
-                    temporaryusers[i].append(int(j))
-            newtempusers = {}
-            for i in temporaryusers:
-                newtempusers[i]=[]
-                for j in temporaryusers[i]:
-                    newtempusers[i].append(int(j))
+        if message.content.startswith(prefix + 'set minimumbet'):
+            global minimumbet
 
-            ranking = sorted(temporaryusers, key=users.get, reverse=True)
+            temp = str(message.content.split(' ')[2])
+            if str(message.author.id) in mods:
+                minimumbet = str(message.content.split(' ')[2])
+                minimumbet = float(str(minimumbet).replace('€', ''))
+                minimumbet = float(str(minimumbet).replace('$', ''))
+                await message.channel.send("Der Minimaleinsatz wurde erfolgreich zu " + str(minimumbet) + "€ geändert.")
+                print(str(message.author) + " set minimum bet to " + str(minimumbet) + "€")
+                print("----------------------------------------------------------")
+            else:
+                await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
+                print(str(message.author) + " tried to set the minimum bet to " + str(temp) + '€')
+                print('Error: Missing permissions')
+                print("----------------------------------------------------------")
+
+        if message.content.startswith(prefix + 'set maximumbet'):
+            global maximumbet
+
+            temp = str(message.content.split(' ')[2])
+            if str(message.author.id) in mods:
+                maximumbet = str(message.content.split(' ')[2])
+                maximumbet = float(str(maximumbet).replace('€', ''))
+                maximumbet = float(str(maximumbet).replace('$', ''))
+                await message.channel.send("Der Maximaleinsatz wurde erfolgreich zu " + str(maximumbet) + "€ geändert.")
+                print(str(message.author) + " set maximum bet to " + str(maximumbet) + "€")
+                print("----------------------------------------------------------")
+            else:
+                await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
+                print(str(message.author) + " tried to set the maximum bet to " + str(temp) + '€')
+                print('Error: Missing permissions')
+                print("----------------------------------------------------------")
+
+        if message.content.startswith(prefix + 'set weeklytip'):
+            global tip_of_the_week
+
+            temp = str(message.content.split(' ')[2])
+            if str(message.author.id) in mods:
+                tip_of_the_week = str(message.content.split(' ')[2])
+                await message.channel.send("Der Tip der Woche wurde erfolgreich zu '" + str(tip_of_the_week) + "' geändert.")
+                print(str(message.author) + " set the weeklytip to '" + str(tip_of_the_week) + "'")
+                print("----------------------------------------------------------")
+            else:
+                await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
+                print(str(message.author) + " tried to set the weekly to '" + str(temp) + "'")
+                print('Error: Missing permissions')
+                print("----------------------------------------------------------")
+
+        if message.content.startswith(prefix + 'set prefix'):
+            temp = str(message.content.split(' ')[2])
+            if str(message.author.id) in mods:
+                prefix = str(message.content.split(' ')[2])
+                await message.channel.send("Der Prefix wurde erfolgreich zu '" + str(prefix) + "' geändert.")
+                print(str(message.author) + " set the Prefix to '" + prefix + "'")
+                print("----------------------------------------------------------")
+            else:
+                await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
+                print(str(message.author) + ' tried to set the Prefix to ' + str(temp) + "'")
+                print('Error: Missing permissions')
+                print("----------------------------------------------------------")
+
+        if message.content == prefix + 'backup users.txt':
+            if str(message.author.id) in mods:
+                if str(message.channel.type) == 'private':
+                    with open("users.txt", "rb") as file:
+                        await message.channel.send("Your requested file is:", file=discord.File(file, "users.txt"))
+
+        if message.content == prefix + 'backup stats.txt':
+            if str(message.author.id) in mods:
+                if str(message.channel.type) == 'private':
+                    with open("stats.txt", "rb") as file:
+                        await message.channel.send("Your requested file is:", file=discord.File(file, "stats.txt"))
+
+        if message.content == prefix + 'backup mods.txt':
+            if str(message.author.id) in mods:
+                if str(message.channel.type) == 'private':
+                    with open("stats.txt", "rb") as file:
+                        await message.channel.send("Your requested file is:", file=discord.File(file, "mods.txt"))
+
+        if message.content == prefix + 'leaderboard':
+            for x in users:
+                users[x] = float(users[x])
+            ranking = sorted(users, key=users.get, reverse=True)
             await message.channel.send('```'
                                        + '\n' + "Baker Street's Top Ten:"
                                        + '\n' + '1st Place:  @' + str(await client.fetch_user(ranking[0])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[0]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[0]]) + '€' + ']'
                                        + '\n' + '2nd Place:  @' + str(await client.fetch_user(ranking[1])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[1]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[1]]) + '€' + ']'
                                        + '\n' + '3rd Place:  @' + str(await client.fetch_user(ranking[2])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[2]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[2]]) + '€' + ']'
                                        + '\n' + '4th Place:  @' + str(await client.fetch_user(ranking[3])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[3]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[3]]) + '€' + ']'
                                        + '\n' + '5th Place:  @' + str(await client.fetch_user(ranking[4])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[4]] + '€' + ']'
-
+                                       + '[Account Balance: ' + str(users[ranking[4]]) + '€' + ']'
                                        + '\n' + '6th Place:  @' + str(await client.fetch_user(ranking[5])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[5]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[5]]) + '€' + ']'
                                        + '\n' + '7th Place:  @' + str(await client.fetch_user(ranking[6])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[6]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[6]]) + '€' + ']'
                                        + '\n' + '8th Place:  @' + str(await client.fetch_user(ranking[7])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[7]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[7]]) + '€' + ']'
                                        + '\n' + '9th Place:  @' + str(await client.fetch_user(ranking[8])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[8]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[8]]) + '€' + ']'
                                        + '\n' + '10th Place: @' + str(await client.fetch_user(ranking[9])) + '  |   '
-                                       + '[Account Balance: ' + users[ranking[9]] + '€' + ']'
+                                       + '[Account Balance: ' + str(users[ranking[9]]) + '€' + ']'
                                        + '\n' + '```')
 
-        if message.content.startswith('/permissions'):
+        if message.content.startswith(prefix + 'permissions'):
             try:
                 requested_user_rank = message.content.split(' ')[1]
             except IndexError:
@@ -506,7 +593,7 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
 
-        if message.content.startswith('/stats'):
+        if message.content.startswith(prefix + 'stats'):
             global won
             global lost
             global balance
@@ -532,7 +619,7 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("User konnte nicht in der Datenbank gefunden werden")
 
-        if message.content.startswith('/mod'):
+        if message.content.startswith(prefix + 'mod'):
             global new_mod
             global removed_mod
 
@@ -552,10 +639,10 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send('Fehlende Berechtigungen: Der befehl konnte nicht ausgeführt werden.')
                 print(message.author + ' tried to add ' + new_mod + ' to mods')
-                print('Error: User is already a mod')
+                print('Error: Missing permissions')
                 print("----------------------------------------------------------")
 
-        if message.content.startswith('/give'):
+        if message.content.startswith(prefix + 'give'):
             global newbalance
             global user_id
             global user_balance
@@ -589,10 +676,10 @@ class MyClient(discord.Client):
                       + str(await client.fetch_user(userid)) + ' from ' + users[userid] + ' to: ' + newbalance + '€')
                 print("----------------------------------------------------------")
 
-        if message.content == '/tipoftheweek' or message.content == '/tipderWoche':
-            await message.channel.send('`' + 'The Tip of the week is: ' + tip_of_the_week + '`')
+        if message.content == prefix + 'weeklytip':
+            await message.channel.send('`' + 'The weekly tip is: ' + tip_of_the_week + '`')
 
-        if message.content == '/register':
+        if message.content == prefix + 'register':
             global user
 
             user = str(message.author.id)
@@ -608,12 +695,12 @@ class MyClient(discord.Client):
                 print("----------------------------------------------------------")
                 await message.channel.send('`' + username + ', du bist schon registriert`')
 
-        if message.content == '/start r':
+        if message.content == prefix + 'start r':
             time.sleep(0.5)
             await message.channel.send(
                 "`Das Spiel beginnt in 45 Sekunden, um dich zu registrieren schreibe '/register'`")
 
-        if message.content.startswith("/tip"):
+        if message.content.startswith(prefix + "tip"):
             global nmbwin
             global clrwin
             global eowin
@@ -627,7 +714,6 @@ class MyClient(discord.Client):
             global third12
             global player
             global player_id
-            global mindesteinsatz
 
             try:
                 tip_bet = message.content.split(' ')[1:]
@@ -650,19 +736,32 @@ class MyClient(discord.Client):
 
             bet = float(str(bet).replace('€', ''))
             bet = float(str(bet).replace('$', ''))
-            if bet < mindesteinsatz and bet != 0:
-                await message.channel.send("Dein Einsatz konnte nicht hinterlegt werden, der Mindesteinsatz beträgt" + str(mindesteinsatz) + ".")
-
-            print('Bet: ' + str(bet) + '€')
-            if str(tip) == 'x':
-                await message.channel.send(
-                    "Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
 
             if bet == 0.0:
                 pass
             elif bet > float(users[player_id]):
                 await message.channel.send('Dein Einsatz konnte nicht hinterlegt werden, dein Guthaben reicht nicht aus.')
+                print('Error: Account balance not sufficient ' + '(' + str(users[player_id]) + '<' + str(bet) + ')')
+                print("----------------------------------------------------------")
                 return
+            elif bet < float(minimumbet) and bet != 0:
+                await message.channel.send("Dein Einsatz konnte nicht hinterlegt werden, der Mindesteinsatz beträgt " + str(minimumbet) + "€.")
+                print('Error: Requested bet smaller than minimumbet ' + '(' + str(minimumbet) + ')')
+                print("----------------------------------------------------------")
+                return
+            elif bet > float(maximumbet) and bet != 0:
+                await message.channel.send(
+                    "Dein Einsatz konnte nicht hinterlegt werden, der Maximaleinsatz beträgt " + str(maximumbet) + "€.")
+                print('Error: Requested bet bigger than maximumbet ' + '(' + str(maximumbet) + ')')
+                print("----------------------------------------------------------")
+                return
+            else:
+                pass
+
+            print('Bet: ' + str(bet) + '€')
+            if str(tip) == 'x':
+                await message.channel.send(
+                    "Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
 
             result = random.randint(-1, 36)
             if result == -1:
