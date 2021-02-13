@@ -1,7 +1,7 @@
 import discord
 import random
 import time
-
+from decimal import Decimal
 
 leaderboard = {}
 roulette_black = ['2', '4', '6', '8', '10', '11', '13', '15', '17', '20', '22', '24', '26', '28', '29', '31', '33', '35']
@@ -113,9 +113,10 @@ def addlose(added_lost):
 
     playerstats = stats[str(player_id)].split('|')
     newbalance = float(users[str(player_id)]) - lost_balance
-    print('New balance= ' + newbalance)
+    print('New balance= ' + str(newbalance))
 
-    lost = float(added_lost) + playerstats[1]
+    lost = Decimal(float(added_lost) + float(playerstats[1]))
+    lost = round(lost,2)
     playerstats[0] = won
     playerstats[1] = lost
     playerstats = str(playerstats[0]) + '|' + str(playerstats[1])
@@ -143,8 +144,10 @@ def addwin(added_won):
 
     playerstats = stats[str(player_id)].split('|')
     newbalance = float(users[str(player_id)]) + added_balance
+    print('New balance= ' + str(newbalance))
 
-    won = float(added_won) + playerstats[0]
+    won = Decimal(float(added_won) + float(playerstats[0]))
+    won = round(won,2)
     playerstats[0] = won
     playerstats[1] = lost
     playerstats = str(playerstats[0]) + '|' + str(playerstats[1])
@@ -680,7 +683,6 @@ class MyClient(discord.Client):
             try:
                 newbalance = str(user_balance[1])
                 newbalance = float(str(newbalance).replace('€', ''))
-                newbalance = float(str(newbalance).replace('$', ''))
             except IndexError:
                 await message.channel.send('Geld konnte nicht hinzugefügt werden')
             old_balance = users[userid]
