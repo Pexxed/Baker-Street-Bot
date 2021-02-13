@@ -138,7 +138,7 @@ def addwin(added_won):
     global bet
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) + added_won - bet
+    newbalance = float(users[str(player_id)]) + added_won
     won = playerstats[0]
     won += float(added_won)
     playerstats[0] = won
@@ -649,9 +649,8 @@ class MyClient(discord.Client):
             global user_id
             global user_balance
 
-            user_balance = message.content.split(' ')[1]
-            user_balance = user_balance.split(':')
-            userid = user_balance[0]
+            user_balance = message.content.split(' ')[1:]
+            userid = user_balance[1]
             try:
                 newbalance = str(user_balance[1])
                 newbalance = float(str(minimumbet).replace('€', ''))
