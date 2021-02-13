@@ -106,6 +106,7 @@ def addlose(added_lost):
     global lost
     global player
     global player_id
+    global bet
 
     playerstats = stats[str(player_id)].split('|')
     newbalance = float(users[str(player_id)]) - added_lost
@@ -134,9 +135,10 @@ def addwin(added_won):
     global looses
     global player
     global player_id
+    global bet
 
     playerstats = stats[str(player_id)].split('|')
-    newbalance = float(users[str(player_id)]) + added_won
+    newbalance = float(users[str(player_id)]) + added_won - bet
     won = 0.0
     won += float(added_won)
     playerstats[0] = won
@@ -652,6 +654,8 @@ class MyClient(discord.Client):
             userid = user_balance[0]
             try:
                 newbalance = str(user_balance[1])
+                newbalance = float(str(minimumbet).replace('€', ''))
+                newbalance = float(str(minimumbet).replace('$', ''))
             except IndexError:
                 await message.channel.send('Geld konnte nicht hinzugefügt werden')
             old_balance = users[userid]
