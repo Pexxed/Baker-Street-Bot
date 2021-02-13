@@ -451,7 +451,12 @@ class MyClient(discord.Client):
             for i in users:
                 temporaryusers[i]=[]
                 for j in users[i]:
-                    temporaryusers[i].append(float(j))
+                    temporaryusers[i].append(int(j))
+            newtempusers = {}
+            for i in temporaryusers:
+                newtempusers[i]=[]
+                for j in temporaryusers[i]:
+                    newtempusers[i].append(int(j))
 
             ranking = sorted(temporaryusers, key=users.get, reverse=True)
             await message.channel.send('```'
