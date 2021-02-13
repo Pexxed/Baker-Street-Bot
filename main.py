@@ -447,7 +447,13 @@ class MyClient(discord.Client):
                                        + '\n' + '/give <userid> | /mod <username>' + '```')
 
         if message.content == '/leaderboard':
-            ranking = sorted(users, key=users.get, reverse=True)
+            temporaryusers = {}
+            for i in users:
+                temporaryusers[i]=[]
+                for j in users[i]:
+                    temporaryusers[i].append(float(j))
+
+            ranking = sorted(temporaryusers, key=users.get, reverse=True)
             await message.channel.send('```'
                                        + '\n' + "Baker Street's Top Ten:"
                                        + '\n' + '1st Place:  @' + str(await client.fetch_user(ranking[0])) + '  |   '
