@@ -478,7 +478,8 @@ class MyClient(discord.Client):
                                        + '\n' + 'give <userid> <value> | mod <userid> | backup <file.txt>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Settings:'
-                                       + '\n' + 'set minimumbet <value> | set maximumbet <value> | set weeklytip <value> | set prefix <value>'
+                                       + '\n' + 'set minimumbet <value> | set maximumbet <value> | set weeklytip <value>'
+                                       + '\n' + 'set prefix <value>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '```')
 
