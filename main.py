@@ -19,6 +19,7 @@ statslist = []
 statsdic = {}
 mods = []
 userlist = []
+bets = {}
 messagecode = 0
 nmbwin = 0
 clrwin = 0
@@ -553,7 +554,7 @@ async def set(ctx):
             print("----------------------------------------------------------")
 
     elif requested_set == 'minimumbet':
-        temp = str(ctx.content.split(' ')[2])
+        temp = str(ctx.message.content.split(' ')[2])
         if str(ctx.author.id) in mods:
             minimumbet = str(ctx.message.content.split(' ')[2])
             minimumbet = float(str(minimumbet).replace('€', ''))
@@ -770,11 +771,26 @@ async def start(ctx):
         global accepting_bets
         time.sleep(0.5)
         await ctx.channel.send("Das Spiel beginnt, um dich zu registrieren schreibe " + '`' + prefix + 'register' + '`'
-                           + '\n' + 'Platziere deine Wette')
+                           + '\n' + '`Platziere deine Wette`')
         accepting_bets = True
         await asyncio.sleep(60)
+    with open("bets.txt", "r") as bets_file:
+        for line in bets_file:
+            if line.strip():
+                user, bet = line.strip().split(':')
+                # bet_tip = bets[user]
+                # bet_tip.split('|')
+                # bet = int(won_lost[0])
+                # tip = int(won_lost[2])
+                # bets[user] = str(bet) + '|' + str(tip)
+        stats_file.close()
+        bets_file.close()
 
-
+    await ctx.channel.purge(limit=100)
+    await showhelp(ctx)
+    f = open('bets.txt', 'r+')
+    f.truncate(0)
+    f.close()
 
 
 @bot.command()
@@ -847,10 +863,7 @@ async def tip(ctx):
         await ctx.channel.send(
                     "Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
 
-    result = random.randint(-1, 36)
-    if result == -1:
-                result = '00'
-    print('Correct Number: ' + str(result))
+    bets[player_id] = tip + '|' + str(bet)
 
     try:
         if int(tip) > 36:
@@ -863,6 +876,12 @@ async def tip(ctx):
             clrwin = -1
             zahl = int(tip)
             print("No Color input")
+
+            result = random.randint(-1, 36)
+            if result == -1:
+                result = '00'
+            print('Correct Number: ' + str(result))
+
             await zahlentest(ctx)
     except ValueError:
         nmbwin = -1
