@@ -489,12 +489,12 @@ async def showhelp(ctx):
                                + '\n' + 'tip first12 | tip second12 | tip third12 | tip x | tip x <bet>'
                                + '\n' + 'tip random | weeklytip'
                                + '\n' + '--------------------------------------------------------------------------'
-                               + '\n' + 'Mods:'
-                               + '\n' + 'give <userid> <value> | mod <userid>'
-                               + '\n' + '--------------------------------------------------------------------------'
                                + '\n' + 'Settings:'
                                + '\n' + 'set minimumbet <value> | set maximumbet <value> | set weeklytip <value>'
                                + '\n' + 'set prefix <value>'
+                               + '\n' + '--------------------------------------------------------------------------'
+                               + '\n' + 'Mods:'
+                               + '\n' + 'give <userid> <value> | mod <userid>'
                                + '\n' + '--------------------------------------------------------------------------'
                                + '```')
 

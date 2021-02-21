@@ -1,18 +1,19 @@
-List of commands for Baker Street Bot:
-
-the default Prefix is: '/'
-
-General Commands: 
+--------------------------------------------------------------------------
+The Prefix is: '/'
+--------------------------------------------------------------------------
+Allgemein:
 help | register | stats <userid> | leaderboard
-permissions | permissions <userid> | clear evidence <value>
-
-Roulette Commands: 
+permissions <value> | permissions <userid> | clear <value>
+--------------------------------------------------------------------------
+Roulette:
 start r | tip black | tip red | tip green | tip odd | tip even
 tip first12 | tip second12 | tip third12 | tip x | tip x <bet>
 tip random | weeklytip
-
+--------------------------------------------------------------------------
+Settings:
+set minimumbet <value> | set maximumbet <value> | set weeklytip <value>
+set prefix <value>
+--------------------------------------------------------------------------
 Mod Commands:
 give <userid> <value> | mod <userid> | backup <file.txt>
-
-Settings:
-set minimumbet <value> | set maximumbet <value> | set weeklytip <value> | set prefix <value>
+--------------------------------------------------------------------------
