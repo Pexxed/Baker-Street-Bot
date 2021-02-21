@@ -257,13 +257,13 @@ class MyClient(discord.Client):
 
             try:
                 if tip == 'odd':
-                    if str(result) not in roulette_even:
+                    if str(result) not in roulette_even and not '0' and not '00':
                         eowin = 1
                         error = 0
                         print('Won Odd or Even')
                         await resulttest()
                         return
-                    if str(result) in roulette_even:
+                    if str(result) in roulette_even and not '0' and not '00':
                         eowin = -1
                         error = 0
                         print('Lost Odd or Even')
@@ -467,7 +467,7 @@ class MyClient(discord.Client):
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
                                        + '\n' + 'help | register | stats <userid> | leaderboard'
-                                       + '\n' + 'permissions permissions <userid>'
+                                       + '\n' + 'permissions | permissions <userid>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
                                        + '\n' + 'start r | tip black | tip red | tip green | tip odd | tip even'
