@@ -585,26 +585,26 @@ async def clear(ctx):
         except:
             await ctx.channel.send('Nachrichten konnten nicht gelöscht werden')
 
-@bot.command(name='backup users.txt')
-async def backupusers(ctx):
+@bot.command()
+async def backup(ctx):
+    requested_file = ctx.message.content.split(' ')[1]
     if str(ctx.author.id) in mods:
-        if str(ctx.channel.type) == 'private':
-            with open("users.txt", "rb") as file:
-                await ctx.channel.send("Your requested file is:", file=discord.File(file, "users.txt"))
-
-@bot.command(name='backup stats.txt')
-async def backupstats(ctx):
-    if str(ctx.author.id) in mods:
-        if str(ctx.channel.type) == 'private':
-            with open("stats.txt", "rb") as file:
-                await ctx.channel.send("Your requested file is:", file=discord.File(file, "stats.txt"))
-
-@bot.command(name='backup mods.txt')
-async def backupmods(ctx):
-    if str(ctx.author.id) in mods:
-        if str(ctx.channel.type) == 'private':
-            with open("stats.txt", "rb") as file:
-                await ctx.channel.send("Your requested file is:", file=discord.File(file, "mods.txt"))
+        if requested_file == 'users.txt':
+            if str(ctx.channel.type) == 'private':
+                with open("users.txt", "rb") as file:
+                    await ctx.channel.send("Your requested file is:", file=discord.File(file, "users.txt"))
+        elif requested_file == 'stats.txt':
+            if str(ctx.channel.type) == 'private':
+                with open("stats.txt", "rb") as file:
+                    await ctx.channel.send("Your requested file is:", file=discord.File(file, "stats.txt"))
+        elif requested_file == 'mods.txt':
+            if str(ctx.channel.type) == 'private':
+                with open("stats.txt", "rb") as file:
+                    await ctx.channel.send("Your requested file is:", file=discord.File(file, "mods.txt"))
+    else:
+        await ctx.channel.send('Fehlende Berechtigungen, bitte kontaktiere einen Moderator für.')
+        print(ctx.author + ' tried to get ' + requested_file)
+        print("----------------------------------------------------------")
 
 @bot.command()
 async def leaderboard(ctx):
