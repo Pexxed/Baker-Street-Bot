@@ -4,7 +4,7 @@ the default Prefix is: '/'
 
 General Commands: 
 help | register | stats <userid> | leaderboard
-permissions | permissions <userid>
+permissions | permissions <userid> | clear evidence <value>
 
 Roulette Commands: 
 start r | tip black | tip red | tip green | tip odd | tip even
