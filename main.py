@@ -467,7 +467,7 @@ class MyClient(discord.Client):
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
                                        + '\n' + 'help | register | stats <userid> | leaderboard'
-                                       + '\n' + 'permissions | permissions <userid>'
+                                       + '\n' + 'permissions | permissions <userid> | clear evidence <value>'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
                                        + '\n' + 'start r | tip black | tip red | tip green | tip odd | tip even'
@@ -554,7 +554,6 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send('Clearing ' + str(msg_to_delete) + ' messages')
                 await message.channel.purge(limit=msg_to_delete + 2)
-
 
 
         if message.content == prefix + 'backup users.txt':
