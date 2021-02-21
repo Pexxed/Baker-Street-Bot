@@ -467,7 +467,7 @@ class MyClient(discord.Client):
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Allgemein:'
                                        + '\n' + 'help | register | stats <userid> | leaderboard'
-                                       + '\n' + 'permissions | permissions <userid>'
+                                       + '\n' + 'permissions | permissions <userid> | clear evidence'
                                        + '\n' + '--------------------------------------------------------------------------'
                                        + '\n' + 'Roulette:'
                                        + '\n' + 'start r | tip black | tip red | tip green | tip odd | tip even'
@@ -546,14 +546,16 @@ class MyClient(discord.Client):
 
         if message.content.startswith(prefix + 'clear evidence'):
             msg_to_delete = int(message.content.split(' ')[2])
-
+            print(msg_to_delete)
             if msg_to_delete == 1:
                 await message.channel.send('Clearing ' + str(msg_to_delete) + ' message')
+                await message.channel.purge(limit=3)
             elif msg_to_delete < 1:
                 await message.channel.send('Fehler, bitte gebe eine positive Zahl ein')
             else:
                 await message.channel.send('Clearing ' + str(msg_to_delete) + ' messages')
-            await message.delete()
+                await message.channel.purge(limit=msg_to_delete + 2)
+
 
 
         if message.content == prefix + 'backup users.txt':
