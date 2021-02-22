@@ -19,7 +19,7 @@ statslist = []
 statsdic = {}
 mods = []
 userlist = []
-bets = {}
+bets = []
 messagecode = 0
 nmbwin = 0
 clrwin = 0
@@ -135,9 +135,11 @@ def addlose(added_lost):
     global added_balance
     global lost_balance
 
+
     playerstats = statsdic[str(player_id)].split('|')
     newbalance = Decimal(float(users[str(player_id)]) - lost_balance)
     newbalance = round(newbalance, 2)
+
 
     lost = Decimal(float(added_lost) + float(playerstats[1]))
     lost = round(lost,2)
@@ -166,6 +168,7 @@ def addwin(added_won):
     global added_balance
     global lost_balance
 
+    print(added_balance)
     playerstats = statsdic[str(player_id)].split('|')
     newbalance = Decimal(float(users[str(player_id)]) + added_balance)
     newbalance = round(newbalance,2)
@@ -387,6 +390,7 @@ async def resulttest(ctx):
     global lost
     global added_balance
     global lost_balance
+    global bet
 
     if str(result) in roulette_black:
         farbe_result = 'black'
@@ -511,6 +515,10 @@ async def help(ctx):
 
 @bot.command()
 async def set(ctx):
+    global prefix
+    global minimumbet
+    global maximumbet
+
     requested_set = ctx.message.content.split(' ')[1]
     if requested_set == 'prefix':
         temp = str(ctx.message.content.split(' ')[2])
@@ -770,23 +778,28 @@ async def start(ctx):
     if game_to_start == 'r':
         global accepting_bets
         time.sleep(0.5)
-        await ctx.channel.send("Das Spiel beginnt, um dich zu registrieren schreibe " + '`' + prefix + 'register' + '`'
-                           + '\n' + '`Platziere deine Wette`')
+        await ctx.channel.send("Das Spiel beginnt, um dich zu registrieren schreibe " + '`' + prefix + 'register' + '`, Platziere deine Wette')
         accepting_bets = True
-        await asyncio.sleep(60)
-    with open("bets.txt", "r") as bets_file:
-        for line in bets_file:
-            if line.strip():
-                user, bet = line.strip().split(':')
-                # bet_tip = bets[user]
-                # bet_tip.split('|')
-                # bet = int(won_lost[0])
-                # tip = int(won_lost[2])
-                # bets[user] = str(bet) + '|' + str(tip)
-        stats_file.close()
-        bets_file.close()
+        await asyncio.sleep(57)
+        accepting_bets = False
+        await asyncio.sleep(3)
 
-    await ctx.channel.purge(limit=100)
+        await ctx.channel.purge(limit=100)
+
+    print(bets)
+    i = 0
+    while i < len(bets):
+        player_tip = bets[i]
+        player_tip.split(':')
+        print(player_tip)
+        player = int(player_tip[0])
+        tip = int(player_tip[1])
+        bet = int(player_tip[2])
+        i += 1
+        print(str(player) + str(tip) + str(bet))
+
+
+
     await showhelp(ctx)
     f = open('bets.txt', 'r+')
     f.truncate(0)
@@ -808,6 +821,7 @@ async def tip(ctx):
     global third12
     global player
     global player_id
+    global bet
 
     if accepting_bets == True:
         pass
@@ -834,8 +848,12 @@ async def tip(ctx):
     print(str(player))
     print('Tip: ' + str(tip))
 
-    bet = float(str(bet).replace('€', ''))
-    bet = float(str(bet).replace('$', ''))
+    try:
+        bet = float(str(bet).replace('€', ''))
+        bet = float(str(bet).replace('$', ''))
+    except:
+        await ctx.channel.send('Dein Einsatz konnte nicht hinterlegt werden, bitte versuche es nocheinmal.')
+        return
 
     if bet == 0.0:
         pass
@@ -863,7 +881,16 @@ async def tip(ctx):
         await ctx.channel.send(
                     "Dein Einsatz konnte nicht hinterlegt werden, gebe eine Zahl zwischen 00 und 36 ein.")
 
-    bets[player_id] = tip + '|' + str(bet)
+    requested_append = str(player_id) + ':' + str(tip) + ':' + str(bet)
+    bets.append(requested_append)
+    with open("bets.txt", "a") as bets_file:
+        bets_file.write(requested_append + '\n')
+    bets_file.close()
+
+    result = random.randint(-1, 36)
+    if result == -1:
+        result = '00'
+    print('Correct Number: ' + str(result))
 
     try:
         if int(tip) > 36:
@@ -876,12 +903,6 @@ async def tip(ctx):
             clrwin = -1
             zahl = int(tip)
             print("No Color input")
-
-            result = random.randint(-1, 36)
-            if result == -1:
-                result = '00'
-            print('Correct Number: ' + str(result))
-
             await zahlentest(ctx)
     except ValueError:
         nmbwin = -1
