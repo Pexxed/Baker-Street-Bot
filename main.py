@@ -113,6 +113,8 @@ def add_user():
                 userlist.append(user + ':' + users[user])
         users_file.close()
 
+    print(users)
+
 def add_mod():
     f = open("mods.txt", "a")
     f.write(new_mod + '\n')
