@@ -88,6 +88,7 @@ def add_user():
         users_file.close()
     if user in users:
         messagecode = 2
+        return
     else:
         users_file.writelines(str(user) + ":0.0" + "\n")
         users_file.flush()
@@ -113,7 +114,6 @@ def add_user():
                 userlist.append(user + ':' + users[user])
         users_file.close()
 
-    print(users)
 
 def add_mod():
     f = open("mods.txt", "a")
