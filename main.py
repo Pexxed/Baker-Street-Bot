@@ -134,6 +134,7 @@ def get_playerstats():
     global lost
     global username
 
+    print(statsdic)
     playerstats = statsdic[str(username)].split('|')
     won = playerstats[0]
     lost = playerstats[1]
