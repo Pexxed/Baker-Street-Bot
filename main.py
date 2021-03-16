@@ -94,6 +94,7 @@ def add_user():
         users_file.flush()
         messagecode = 1
         users_file.close()
+
     b = open("stats.txt", "a")
 
     if user in statsdic:
@@ -103,6 +104,19 @@ def add_user():
         b.flush()
         messagecode = 1
         b.close()
+
+    statsdic.clear()
+
+    with open("stats.txt", "r") as stats_file:
+        for line in stats_file:
+            if line.strip():
+                user, won_lost = line.strip().split(':')
+                statsdic[user] = won_lost
+                won_lost.split('|')
+                won = int(won_lost[0])
+                lost = int(won_lost[2])
+                statslist.append(user + ':' + statsdic[user])
+        stats_file.close()
 
     users.clear()
 
