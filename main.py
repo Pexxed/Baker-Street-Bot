@@ -134,7 +134,19 @@ def get_playerstats():
     global lost
     global username
 
-    print(statsdic)
+    statsdic.clear()
+
+    with open("stats.txt", "r") as stats_file:
+        for line in stats_file:
+            if line.strip():
+                user, won_lost = line.strip().split(':')
+                statsdic[user] = won_lost
+                won_lost.split('|')
+                won = int(won_lost[0])
+                lost = int(won_lost[2])
+                statslist.append(user + ':' + statsdic[user])
+        stats_file.close()
+
     playerstats = statsdic[str(username)].split('|')
     won = playerstats[0]
     lost = playerstats[1]
