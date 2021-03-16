@@ -79,14 +79,20 @@ except FileNotFoundError:
 def add_user():
     global messagecode
 
-    f = open("users.txt", "a")
+    with open("users.txt", "r") as users_file:
+        for line in users_file:
+            if line.strip():
+                user, wealth = line.strip().split(':')
+                users[user] = wealth
+                userlist.append(user + ':' + users[user])
+        users_file.close()
     if user in users:
         messagecode = 2
     else:
-        f.writelines(str(user) + ":0.0" + "\n")
-        f.flush()
+        users_file.writelines(str(user) + ":0.0" + "\n")
+        users_file.flush()
         messagecode = 1
-        f.close()
+        users_file.close()
     b = open("stats.txt", "a")
 
     if user in statsdic:
@@ -96,7 +102,14 @@ def add_user():
         b.flush()
         messagecode = 1
         b.close()
-
+    
+    with open("users.txt", "r") as users_file:
+        for line in users_file:
+            if line.strip():
+                user, wealth = line.strip().split(':')
+                users[user] = wealth
+                userlist.append(user + ':' + users[user])
+        users_file.close()
 
 def add_mod():
     f = open("mods.txt", "a")
