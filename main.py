@@ -641,7 +641,7 @@ async def clear(ctx):
 @bot.command()
 async def backup(ctx):
     requested_file = ctx.message.content.split(' ')[1]
-    print(ctx.author + " requested " + requested_file)
+    print(str(ctx.author) + " requested " + str(requested_file))
     if str(ctx.author.id) in mods:
         if requested_file == 'users.txt':
             if str(ctx.channel.type) == 'private':
@@ -657,7 +657,7 @@ async def backup(ctx):
                     await ctx.channel.send("Your requested file is:", file=discord.File(file, "mods.txt"))
     else:
         await ctx.channel.send('Fehlende Berechtigungen, bitte kontaktiere einen Moderator für.')
-        print(ctx.author + ' tried to get ' + requested_file)
+        print(str(ctx.author) + ' tried to get ' + str(requested_file))
         print("----------------------------------------------------------")
 
 @bot.command()
