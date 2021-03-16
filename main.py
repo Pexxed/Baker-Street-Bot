@@ -161,8 +161,6 @@ def get_playerstats():
                 statslist.append(user + ':' + statsdic[user])
         stats_file.close()
 
-    print(statsdic)
-
     playerstats = statsdic[str(username)].split('|')
     won = playerstats[0]
     lost = playerstats[1]
