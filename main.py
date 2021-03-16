@@ -641,6 +641,7 @@ async def clear(ctx):
 @bot.command()
 async def backup(ctx):
     requested_file = ctx.message.content.split(' ')[1]
+    print(ctx.author + " requested " + requested_file)
     if str(ctx.author.id) in mods:
         if requested_file == 'users.txt':
             if str(ctx.channel.type) == 'private':
