@@ -130,11 +130,20 @@ def add_user():
 
 
 def add_mod():
+    global mods
+
     f = open("mods.txt", "a")
     f.write(new_mod + '\n')
     f.flush()
     f.close()
-    mods.append(new_mod)
+
+    mods = []
+
+    with open("mods.txt", "r") as mods_file:
+        f = mods_file.read()
+        mods = f.splitlines()
+        users_file.close()
+
 
 def remove_mod():
     mods.remove(remove_mod())
