@@ -102,7 +102,9 @@ def add_user():
         b.flush()
         messagecode = 1
         b.close()
-    
+
+    users.clear()
+
     with open("users.txt", "r") as users_file:
         for line in users_file:
             if line.strip():
