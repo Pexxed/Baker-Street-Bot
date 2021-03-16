@@ -665,7 +665,7 @@ async def backup(ctx):
                 with open("stats.txt", "rb") as file:
                     await ctx.channel.send("Your requested file is:", file=discord.File(file, "mods.txt"))
     else:
-        await ctx.channel.send('Fehlende Berechtigungen, bitte kontaktiere einen Moderator für.')
+        await ctx.channel.send('Fehlende Berechtigungen, bitte kontaktiere einen Moderator.')
         print(str(ctx.author) + ' tried to get ' + str(requested_file))
         print("----------------------------------------------------------")
 
