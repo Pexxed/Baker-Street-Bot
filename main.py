@@ -83,7 +83,7 @@ def add_user():
     if user in users:
         messagecode = 2
     else:
-        f.writelines(str(user) + ":0" + "\n")
+        f.writelines(str(user) + ":0.0" + "\n")
         f.flush()
         messagecode = 1
         f.close()
@@ -92,7 +92,7 @@ def add_user():
     if user in statsdic:
         messagecode = 2
     else:
-        b.writelines(str(user) + "0|0" + "\n")
+        b.writelines(str(user) + "0.0|0.0" + "\n")
         b.flush()
         messagecode = 1
         b.close()
@@ -804,7 +804,6 @@ async def start(ctx):
     f = open('bets.txt', 'r+')
     f.truncate(0)
     f.close()
-
 
 @bot.command()
 async def tip(ctx):
