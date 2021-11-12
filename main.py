@@ -194,7 +194,6 @@ def addlose(added_lost):
     newbalance = Decimal(float(users[str(player_id)]) - lost_balance)
     newbalance = round(newbalance, 2)
 
-
     lost = Decimal(float(added_lost) + float(playerstats[1]))
     lost = round(lost,2)
     playerstats[0] = won
