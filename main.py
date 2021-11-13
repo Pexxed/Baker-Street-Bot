@@ -194,6 +194,7 @@ def addlose(added_lost):
     newbalance = Decimal(float(users[str(player_id)]) - lost_balance)
     newbalance = round(newbalance, 2)
 
+
     lost = Decimal(float(added_lost) + float(playerstats[1]))
     lost = round(lost,2)
     playerstats[0] = won
@@ -265,8 +266,28 @@ async def zahlentest(ctx):
     global nmbwin
     global result
     global zahl
-
-    if str(result) == str(zahl):
+    print("zahl:" + str(zahl))
+    if str(result) == '0' and str(zahl) == '0':
+        nmbwin = 1
+        print('Won Zahlentest')
+        await resulttest(ctx)
+        return
+    elif str(result) == '00' and str(zahl) == '00':
+        nmbwin = 1
+        print('Won Zahlentest')
+        await resulttest(ctx)
+        return
+    elif str(result) == '0' and str(zahl) == '00':
+        nmbwin = -1
+        print('Lost Zahlentest')
+        await resulttest(ctx)
+        return
+    elif str(result) == '00' and str(zahl) == '0':
+        nmbwin = -1
+        print('Lost Zahlentest')
+        await resulttest(ctx)
+        return
+    elif str(result) == str(zahl):
         nmbwin = 1
         print('Won Zahlentest')
         await resulttest(ctx)
@@ -276,7 +297,6 @@ async def zahlentest(ctx):
         print('Lost Zahlentest')
         await resulttest(ctx)
         return
-
 
 async def farbentest(ctx):
     global clrwin
@@ -872,17 +892,19 @@ async def start(ctx):
     if start_possible == True:
         game_to_start = ctx.message.content.split(' ')[1]
         if game_to_start == 'r':
-            print(prefix + "start r by " + str(ctx.author))
-            start_possible = False
-            time.sleep(0.5)
-            await ctx.channel.send("Das Spiel beginnt, um dich zu registrieren schreibe " + '`' + prefix + 'register' + '`, Platziere deine Wette')
-            accepting_bets = True
-            await asyncio.sleep(300)
-            accepting_bets = False
-            await asyncio.sleep(1)
-            start_possible = True
-            await ctx.channel.purge(limit=100)
-            await showhelp()
+            command = str(ctx.message.content.split('t'))
+            if len(command) == 18:
+                print(prefix + "start r by " + str(ctx.author))
+                start_possible = False
+                time.sleep(0.5)
+                await ctx.channel.send("Das Spiel beginnt, um dich zu registrieren schreibe " + '`' + prefix + 'register' + '`, Platziere deine Wette')
+                accepting_bets = True
+                await asyncio.sleep(300)
+                accepting_bets = False
+                await asyncio.sleep(1)
+                start_possible = True
+                await ctx.channel.purge(limit=100)
+                await showhelp()
     else:
         await ctx.channel.send('Es läuft brereits ein Spiel.')
         await asyncio.sleep(300)
@@ -990,7 +1012,7 @@ async def tip(ctx):
             return
         else:
             clrwin = -1
-            zahl = int(tip)
+            zahl = tip
             print("No Color input")
             await zahlentest(ctx)
     except ValueError:
